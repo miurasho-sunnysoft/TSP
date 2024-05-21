@@ -11,7 +11,7 @@ public class TeacherDAO {
     private String jdbcUsername = "root";
     private String jdbcPassword = "5041";
 
-    private static final String INSERT_TEACHERS_SQL = "INSERT INTO teachers (name, age, sex, course) VALUES (?, ?, ?, ?)";
+    private static final String INSERT_TEACHERS_SQL = "INSERT INTO teachers (id, name, age, sex, course) VALUES (?, ?, ?, ?, ?)";
     private static final String SELECT_TEACHER_BY_ID = "SELECT id, name, age, sex, course FROM teachers WHERE id = ?";
     private static final String SELECT_ALL_TEACHERS = "SELECT * FROM teachers";
     private static final String DELETE_TEACHERS_SQL = "DELETE FROM teachers WHERE id = ?";
@@ -31,10 +31,11 @@ public class TeacherDAO {
     public void insertTeacher(Teacher teacher) throws SQLException {
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_TEACHERS_SQL)) {
-            preparedStatement.setString(1, teacher.getName());
-            preparedStatement.setInt(2, teacher.getAge());
-            preparedStatement.setString(3, teacher.getSex());
-            preparedStatement.setString(4, teacher.getCourse());
+            preparedStatement.setInt(1, teacher.getId());
+            preparedStatement.setString(2, teacher.getName());
+            preparedStatement.setInt(3, teacher.getAge());
+            preparedStatement.setString(4, teacher.getSex());
+            preparedStatement.setString(5, teacher.getCourse());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             printSQLException(e);

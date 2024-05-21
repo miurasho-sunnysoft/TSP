@@ -32,6 +32,9 @@ public class TeacherServlet extends HttpServlet {
         String action = request.getServletPath();
 
         try {
+            // 文字コードを設定する
+            request.setCharacterEncoding("shift_jis");
+            response.setCharacterEncoding("shift_jis");
             switch (action) {
                 case "/new":
                     showNewForm(request, response);
