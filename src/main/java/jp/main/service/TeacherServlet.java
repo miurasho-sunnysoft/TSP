@@ -3,15 +3,15 @@ package jp.main.service;
 import jp.main.dao.TeacherDAO;
 import jp.main.model.Teacher;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet("/")
 public class TeacherServlet extends HttpServlet {
@@ -24,17 +24,18 @@ public class TeacherServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
         doGet(request, response);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8"); // リクエストのエンコーディングを設定
+        response.setCharacterEncoding("UTF-8"); // レスポンスのエンコーディングを設定
         String action = request.getServletPath();
 
         try {
-            // 文字コードを設定する
-            request.setCharacterEncoding("shift_jis");
-            response.setCharacterEncoding("shift_jis");
             switch (action) {
                 case "/new":
                     showNewForm(request, response);
@@ -51,6 +52,9 @@ public class TeacherServlet extends HttpServlet {
                 case "/update":
                     updateTeacher(request, response);
                     break;
+                case "/search":
+                    searchTeacher(request, response);
+                    break;
                 default:
                     listTeacher(request, response);
                     break;
@@ -59,6 +63,7 @@ public class TeacherServlet extends HttpServlet {
             throw new ServletException(ex);
         }
     }
+
 
     private void listTeacher(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
@@ -100,7 +105,7 @@ public class TeacherServlet extends HttpServlet {
 
     private void updateTeacher(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
+        int id = Integer.parseInt(request.getParameter("id")); // This line is likely causing the issue
         String name = request.getParameter("name");
         int age = Integer.parseInt(request.getParameter("age"));
         String sex = request.getParameter("sex");
@@ -117,10 +122,26 @@ public class TeacherServlet extends HttpServlet {
         response.sendRedirect("list");
     }
 
+
     private void deleteTeacher(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         teacherDAO.deleteTeacher(id);
         response.sendRedirect("list");
+    }
+
+    private void searchTeacher(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, IOException, ServletException {
+        String idStr = request.getParameter("id");
+        String name = request.getParameter("name");
+        String course = request.getParameter("course");
+        Integer id = idStr != null && !idStr.isEmpty() ? Integer.parseInt(idStr) : null;
+
+        System.out.println("Search Parameters: id=" + id + ", name=" + name + ", course=" + course);
+
+        List<Teacher> listTeacher = teacherDAO.searchTeachers(id, name, course);
+        request.setAttribute("listTeacher", listTeacher);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("teacher_list.jsp");
+        dispatcher.forward(request, response);
     }
 }

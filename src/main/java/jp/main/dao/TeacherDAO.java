@@ -111,12 +111,67 @@ public class TeacherDAO {
             statement.setInt(2, teacher.getAge());
             statement.setString(3, teacher.getSex());
             statement.setString(4, teacher.getCourse());
-            statement.setInt(5, teacher.getId());
+            statement.setInt(5, teacher.getId()); // Set the ID parameter as the last parameter
 
             rowUpdated = statement.executeUpdate() > 0;
         }
         return rowUpdated;
     }
+
+
+    public List<Teacher> searchTeachers(Integer id, String name, String course) {
+        List<Teacher> teachers = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM teachers WHERE 1=1");
+
+        if (id != null) {
+            sql.append(" AND id = ?");
+        }
+        if (name != null && !name.trim().isEmpty()) {
+            sql.append(" AND name LIKE ?");
+        }
+        if (course != null && !course.trim().isEmpty()) {
+            sql.append(" AND course = ?");
+        }
+
+        System.out.println("Generated SQL: " + sql.toString());
+
+        try (Connection connection = getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql.toString())) {
+            int parameterIndex = 1;
+            if (id != null) {
+                preparedStatement.setInt(parameterIndex++, id);
+            }
+            if (name != null && !name.trim().isEmpty()) {
+                preparedStatement.setString(parameterIndex++, "%" + name.trim() + "%");
+            }
+            if (course != null && !course.trim().isEmpty()) {
+                preparedStatement.setString(parameterIndex++, course);
+            }
+
+            System.out.println("SQL Parameters: id=" + id + ", name=" + name + ", course=" + course);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                int teacherId = rs.getInt("id");
+                String teacherName = rs.getString("name");
+                int age = rs.getInt("age");
+                String sex = rs.getString("sex");
+                String teacherCourse = rs.getString("course");
+                Teacher teacher = new Teacher();
+                teacher.setId(teacherId);
+                teacher.setName(teacherName);
+                teacher.setAge(age);
+                teacher.setSex(sex);
+                teacher.setCourse(teacherCourse);
+                teachers.add(teacher);
+            }
+        } catch (SQLException e) {
+            printSQLException(e);
+        }
+        return teachers;
+    }
+
 
     private void printSQLException(SQLException ex) {
         for (Throwable e : ex) {

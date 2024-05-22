@@ -7,7 +7,6 @@
     <meta charset="UTF-8">
     <title>教師情報</title>
     <style type="text/css">
-        /* 画像と似たレイアウトにするためのCSSスタイルを追加 */
         table, th, td {
             border: 1px solid black;
             padding: 5px;
@@ -18,13 +17,11 @@
 
 <h1>教師情報</h1>
 
-<!-- 検索フォームを追加 -->
-<form action="" method="">
+<form action="/search" method="get" accept-charset="UTF-8">
     教師番号: <input type="number" name="id">
     教師名: <input type="text" name="name">
     コース:
     <select name="course">
-        <!-- 選択肢を追加 -->
         <option value="">コースを選択</option>
         <option value="日本語">日本語</option>
         <option value="数学">数学</option>
@@ -38,31 +35,34 @@
 <a href="/new">新規登録</a>
 
 <table border="1">
-    <!-- ... 以降のコードはそのまま ... -->
     <tr>
-                <th>ID</th>
-                <th>名前</th>
-                <th>年齢</th>
-                <th>性別</th>
-                <th>コース</th>
-                <th>アクション</th>
-            </tr>
-            <%
-                List<Teacher> listTeacher = (List<Teacher>) request.getAttribute("listTeacher");
-                for (Teacher teacher : listTeacher) {
-            %>
-            <tr>
-                <td><%= teacher.getId() %></td>
-                <td><%= teacher.getName() %></td>
-                <td><%= teacher.getAge() %></td>
-                <td><%= teacher.getSex() %></td>
-                <td><%= teacher.getCourse() %></td>
-                <td>
-                    <a href="edit?id=<%= teacher.getId() %>">編集</a>
-                    <a href="delete?id=<%= teacher.getId() %>">削除</a>
-                </td>
-            </tr>
-            <% } %>
-        </table>
-    </body>
-    </html>
+        <th>ID</th>
+        <th>名前</th>
+        <th>年齢</th>
+        <th>性別</th>
+        <th>コース</th>
+        <th>アクション</th>
+    </tr>
+    <%
+        List<Teacher> listTeacher = (List<Teacher>) request.getAttribute("listTeacher");
+        if (listTeacher != null) {
+            for (Teacher teacher : listTeacher) {
+    %>
+    <tr>
+        <td><%= teacher.getId() %></td>
+        <td><%= teacher.getName() %></td>
+        <td><%= teacher.getAge() %></td>
+        <td><%= teacher.getSex() %></td>
+        <td><%= teacher.getCourse() %></td>
+        <td>
+            <a href="edit?id=<%= teacher.getId() %>">編集</a>
+            <a href="delete?id=<%= teacher.getId() %>">削除</a>
+        </td>
+    </tr>
+    <%
+            }
+        }
+    %>
+</table>
+</body>
+</html>
